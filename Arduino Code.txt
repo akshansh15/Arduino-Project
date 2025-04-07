@@ -1,0 +1,157 @@
+#define button1 2 //the number of button 1
+#define button2 3 //button2 attach to
+#define button3 4 //button3 attach to
+#define button4 9 //button4 attach to
+#define button5 1
+#define button6 0
+#define buzzerPin 5 //the buzzer attach to
+#define LED1 6 //LED 1 attach to
+#define LED2 7 //LED2 attach to
+#define LED3 8 //LED3 attach to
+#define LED4 10 //LED4 attach to
+#define LED5 12
+#define LED6 11
+
+#define uint8 unsigned char
+
+uint8 flag = 0; //used to indicate the state of button4 key
+uint8 b1State, b2State, b3State,b5State,b6State;
+uint8 b4State = 0;
+
+void setup() {
+  //initialize buzzer, LED1, LED2, LED3, and LED4 as output
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  pinMode(LED3, OUTPUT);
+  pinMode(LED4, OUTPUT);
+  pinMode(LED5, OUTPUT);
+  pinMode(LED6, OUTPUT);
+  
+  //initialize button1, button2, button3, and button4 as input with pull-up resistors
+  pinMode(button1, INPUT_PULLUP);
+  pinMode(button2, INPUT_PULLUP);
+  pinMode(button3, INPUT_PULLUP);
+  pinMode(button4, INPUT_PULLUP);
+  pinMode(button5, INPUT_PULLUP);
+  pinMode(button6, INPUT_PULLUP);
+  
+  //turn all LEDs off initially
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED4, LOW);
+  digitalWrite(LED5, LOW);
+  digitalWrite(LED6, LOW);
+}
+
+void loop() {{
+  //turn off all the LEDs
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED4, LOW);
+  digitalWrite(LED5, LOW);
+  digitalWrite(LED6, LOW);
+}
+
+  //read the state of button4
+  b4State = digitalRead(button4);
+
+  //when button4 is pressed
+  if (b4State == 0) {
+    flag = 1; //flag is set to 1
+    digitalWrite(LED4, HIGH); //turn the host LED on
+    delay(200); //debounce delay
+  }
+
+  //if button4 has been pressed, check other buttons
+  if (flag == 1) {
+    //read the state of button1, button2, and button3
+    b1State = digitalRead(button1);
+    b2State = digitalRead(button2);
+    b3State = digitalRead(button3);
+    b5State = digitalRead(button5);
+    b6State = digitalRead(button6);
+
+    //If button1 is pressed first
+    if (b1State == 0) {
+      flag = 0;
+      digitalWrite(LED4, LOW);
+      Alarm(); //buzzer sound
+      digitalWrite(LED1, HIGH); //turn LED1 on
+      digitalWrite(LED2, LOW);
+      digitalWrite(LED3, LOW);
+      digitalWrite(LED5, LOW);
+      digitalWrite(LED6, LOW);
+      waitForReset(); //wait for reset
+    }
+
+    //If button2 is pressed first
+    if (b2State == 0) {
+      flag = 0;
+      digitalWrite(LED4, LOW);
+      Alarm(); //buzzer sound
+      digitalWrite(LED1, LOW);
+      digitalWrite(LED2, HIGH); //turn LED2 on
+      digitalWrite(LED3, LOW);
+      digitalWrite(LED5, LOW);
+      digitalWrite(LED6, LOW);
+      waitForReset(); //wait for reset
+    }
+
+    //If button3 is pressed first
+    if (b3State == 0) {
+      flag = 0;
+      digitalWrite(LED4, LOW);
+      Alarm(); //buzzer sound
+      digitalWrite(LED1, LOW);
+      digitalWrite(LED2, LOW);
+      digitalWrite(LED3, HIGH); //turn LED3 on
+      digitalWrite(LED5, LOW);
+      digitalWrite(LED6, LOW);
+      waitForReset(); //wait for reset
+    }
+
+    if (b5State == 0) {
+      flag = 0;
+      digitalWrite(LED4, LOW);
+      Alarm(); //buzzer sound
+      digitalWrite(LED1, LOW);
+      digitalWrite(LED2, LOW);
+      digitalWrite(LED3, LOW); //turn LED3 on
+      digitalWrite(LED5, HIGH);
+      digitalWrite(LED6, LOW);
+      waitForReset(); //wait for reset
+    }
+
+    if (b6State == 0) {
+      flag = 0;
+      digitalWrite(LED4, LOW);
+      Alarm(); //buzzer sound
+      digitalWrite(LED1, LOW);
+      digitalWrite(LED2, LOW);
+      digitalWrite(LED3, LOW); //turn LED3 on
+      digitalWrite(LED5, LOW);
+      digitalWrite(LED6, HIGH);
+      waitForReset(); //wait for reset
+    }
+    
+  }
+}
+
+//buzzer sound function
+void Alarm() {
+  for (int i = 0; i < 100; i++) {
+    digitalWrite(buzzerPin, HIGH); //the buzzer sound
+    delay(2);
+    digitalWrite(buzzerPin, LOW); //turn off sound
+    delay(2); //change delay to adjust frequency
+  }
+}
+
+//function to wait for button4 reset
+void waitForReset() {
+  while (digitalRead(button4) == HIGH); //wait until button4 is pressed again
+  delay(200); //debounce delay
+}
